@@ -59,6 +59,13 @@ async function run() {
         res.send(result)
      })
 
+     // get all orders customar email
+     app.get('/my-orders/:email', async(req, res) => {
+        const email = req.params.email
+        const filter = {customarEmail: email}
+        const result = await orderCollaction.find(filter).toArray()
+        res.send(result)
+     })
 
      // coffee get limit oparation
      app.get('/coffee-limit', async(req, res) => {
