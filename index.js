@@ -30,11 +30,32 @@ async function run() {
 
     // coffees collaction
      const coffeeCollaction = client.db("coffee-store").collection("coffees")
+     const orderCollaction = client.db("coffee-store").collection("orders")
 
      // coffee post mathord
      app.post('/coffees', async(req, res) => {
         const newCoffee = req.body;
+        const quantity = newCoffee.quantity
+        newCoffee.quantity = parent(quantity)
         const result = await coffeeCollaction.insertOne(newCoffee)
+        res.send(result)
+     })
+
+     // orders post mathord
+     app.post('/orders/:coffeeId', async(req, res) => {
+        const id = req.params.coffeeId;
+        const newOrders = req.body;
+        const result = await orderCollaction.insertOne(newOrders)
+        if(result.acknowledged){
+            // update quantity form coffee collaction
+            await coffeeCollaction.updateOne({_id: new ObjectId(id)},
+             {$inc: {
+                quantity: - 1,
+             }
+
+             }
+        )
+        }
         res.send(result)
      })
 
